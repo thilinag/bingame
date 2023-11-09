@@ -1,0 +1,66 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+body,
+html {
+  height: 100%;
+}
+
+body {
+  display: grid;
+  place-items: center;
+}
+
+.stage {
+  background: pink;
+  width: 50vw;
+  height: 50vh;
+  position: relative;
+}
+
+.hero {
+  position: absolute;
+  /* background: green; */
+  opacity: 0.7;
+  aspect-ratio: 1;
+  background-image: url(https://i.stack.imgur.com/AjFP5.png);
+  background-position-y: 0;
+}
+
+.hero.moving_right,
+.hero.moving_left,
+.hero.moving_up,
+.hero.moving_down {
+  animation: move 0.5s steps(4) infinite;
+}
+
+.hero.moving_right {
+  background-position-y: -128px;
+}
+
+.hero.moving_left {
+  background-position-y: -64px;
+}
+
+.hero.moving_up {
+  background-position-y: -192px;
+}
+
+.hero.moving_down {
+  background-position-y: 0;
+}
+
+.thing {
+  position: absolute;
+  opacity: 0.7;
+}
+
+@keyframes move {
+  to {
+    background-position-x: -256px;
+  }
+}
