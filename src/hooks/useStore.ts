@@ -78,13 +78,16 @@ function isColliding(state: State) {
             x1 +
                 w1 +
                 (rightPressed ? speed : 0) +
-                (leftPressed ? speed * -1 : 0) >
+                (leftPressed ? speed * -1 : 0) >=
                 x2 &&
-            x1 + (rightPressed ? speed : 0) + (leftPressed ? speed * -1 : 0) <
+            x1 + (rightPressed ? speed : 0) + (leftPressed ? speed * -1 : 0) <=
                 x2 + w2 &&
-            y1 + (downPressed ? speed : 0) + (upPressed ? speed * -1 : 0) + h1 >
+            y1 +
+                (downPressed ? speed : 0) +
+                (upPressed ? speed * -1 : 0) +
+                h1 >=
                 y2 &&
-            y1 + (downPressed ? speed : 0) + (upPressed ? speed * -1 : 0) <
+            y1 + (downPressed ? speed : 0) + (upPressed ? speed * -1 : 0) <=
                 y2 + h2
         );
     });

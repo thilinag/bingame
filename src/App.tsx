@@ -180,7 +180,7 @@ function App() {
                     >
                         {name}
                     </div>
-                )
+                ),
             )}
         </main>
     );
