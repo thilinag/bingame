@@ -10,7 +10,8 @@ interface Thing {
     height: number;
     background: string;
     name: string;
-    isColliding: boolean;
+    canInteract: boolean;
+    isInteracting: boolean;
 }
 
 interface State {
@@ -31,7 +32,7 @@ interface State {
     moveRight: () => void;
     setStage: (ref: HTMLElement) => void;
     setHero: (ref: HTMLElement) => void;
-    setCollidingWith: (itemIndex: number) => void;
+    updateStuff: (stuff: Thing[]) => void;
 }
 
 function isColliding(state: State) {
@@ -44,7 +45,7 @@ function isColliding(state: State) {
         rightPressed,
         leftPressed,
         stuff,
-        setCollidingWith,
+        updateStuff,
     } = state;
 
     if (!hero || !stage) return false;
@@ -92,8 +93,25 @@ function isColliding(state: State) {
         );
     });
 
+    const interactingThings = stuff.map((thing) => {
+        const { x: x2, y: y2, width: w2, height: h2, canInteract } = thing;
+
+        const isInteracting =
+            canInteract &&
+            x1 - speed <= x2 + w2 &&
+            x1 - speed + w1 + speed * 2 >= x2 &&
+            y1 - speed <= y2 + h2 &&
+            y1 + h1 + speed * 2 >= y2;
+
+        return {
+            ...thing,
+            isInteracting,
+        };
+    });
+
+    updateStuff(interactingThings);
+
     const isColliding = collidingIndex > -1;
-    setCollidingWith(collidingIndex);
 
     return isColliding;
 }
@@ -159,7 +177,8 @@ export const useStore = create<State>()((set) => ({
             height: 50,
             background: "blue",
             name: "thing1a",
-            isColliding: false,
+            canInteract: false,
+            isInteracting: false,
         },
         {
             x: 400,
@@ -168,7 +187,8 @@ export const useStore = create<State>()((set) => ({
             height: 50,
             background: "green",
             name: "thing2",
-            isColliding: false,
+            canInteract: true,
+            isInteracting: false,
         },
     ],
     press: (direction, moving = true) =>
@@ -204,13 +224,8 @@ export const useStore = create<State>()((set) => ({
         set(() => ({
             hero: ref,
         })),
-    setCollidingWith: (itemIndex) =>
-        set((state) => {
-            const stuff = state.stuff.map((thing, index) => ({
-                ...thing,
-                isColliding: index === itemIndex,
-            }));
-
+    updateStuff: (stuff) =>
+        set(() => {
             return { stuff };
         }),
 }));

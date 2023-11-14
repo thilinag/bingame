@@ -181,7 +181,7 @@ function App() {
                 }}
             ></div>
             {stuff.map(
-                ({ x, y, width, height, background, name, isColliding }) => (
+                ({ x, y, width, height, background, name, isInteracting }) => (
                     <div
                         key={name}
                         className="thing"
@@ -191,7 +191,7 @@ function App() {
                             height: `${height}px`,
                             width: `${width}px`,
                             background,
-                            ...(isColliding && { outline: "1px solid red" }),
+                            ...(isInteracting && { outline: "1px solid red" }),
                         }}
                     >
                         {name}
