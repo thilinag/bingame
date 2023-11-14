@@ -87,19 +87,27 @@ function App() {
         const { key } = event;
         switch (key) {
             case "w":
+            case "W":
+            case "ArrowUp":
                 press("up");
                 break;
 
             case "a":
+            case "A":
+            case "ArrowLeft":
                 press("left");
 
                 break;
 
             case "s":
+            case "S":
+            case "ArrowDown":
                 press("down");
                 break;
 
             case "d":
+            case "D":
+            case "ArrowRight":
                 press("right");
                 break;
 
@@ -112,18 +120,26 @@ function App() {
         const { key } = event;
         switch (key) {
             case "w":
+            case "W":
+            case "ArrowUp":
                 press("up", false);
                 break;
 
             case "a":
+            case "A":
+            case "ArrowLeft":
                 press("left", false);
                 break;
 
             case "s":
+            case "S":
+            case "ArrowDown":
                 press("down", false);
                 break;
 
             case "d":
+            case "D":
+            case "ArrowRight":
                 press("right", false);
                 break;
 
