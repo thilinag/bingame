@@ -12,6 +12,7 @@ interface Thing {
     name: string;
     canInteract: boolean;
     isInteracting: boolean;
+    canCollide: boolean;
 }
 
 interface State {
@@ -74,8 +75,9 @@ function isColliding(state: State) {
     // });
 
     const collidingIndex = stuff.findIndex((thing) => {
-        const { x: x2, y: y2, width: w2, height: h2 } = thing;
+        const { x: x2, y: y2, width: w2, height: h2, canCollide } = thing;
         return (
+            canCollide &&
             x1 +
                 w1 +
                 (rightPressed ? speed : 0) +
@@ -173,12 +175,13 @@ export const useStore = create<State>()((set) => ({
         {
             x: 100,
             y: 100,
-            width: 100,
-            height: 50,
+            width: 24,
+            height: 24,
             background: "blue",
             name: "thing1a",
-            canInteract: false,
+            canInteract: true,
             isInteracting: false,
+            canCollide: false,
         },
         {
             x: 400,
@@ -189,6 +192,7 @@ export const useStore = create<State>()((set) => ({
             name: "thing2",
             canInteract: true,
             isInteracting: false,
+            canCollide: true,
         },
     ],
     press: (direction, moving = true) =>
