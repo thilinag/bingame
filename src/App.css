@@ -13,10 +13,11 @@ html {
 body {
     display: grid;
     place-items: center;
+    font-family: "Pixelify Sans", sans-serif;
 }
 
 .stage {
-    background: pink;
+    background: gray;
     width: 50vw;
     height: 50vh;
     position: relative;
@@ -24,10 +25,11 @@ body {
 
 .hero {
     position: absolute;
+    z-index: 2;
     /* background: green; */
     opacity: 0.7;
     aspect-ratio: 1;
-    background-image: url(https://i.stack.imgur.com/AjFP5.png);
+    background-image: url(/sprite.png);
     background-position-y: 0;
 }
 
@@ -54,13 +56,41 @@ body {
     background-position-y: 0;
 }
 
-.thing {
-    position: absolute;
-    opacity: 0.7;
-}
-
 @keyframes move {
     to {
         background-position-x: -256px;
+    }
+}
+
+.thingWrapper {
+    position: absolute;
+
+    .thing {
+        position: absolute;
+        inset: 0;
+        background-image: url(/sprite.png);
+        z-index: 1;
+    }
+
+    .tooltip {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%) translateY(-110%);
+        text-transform: capitalize;
+        font-weight: bold;
+        display: none;
+        padding: 0.25rem 0.5rem;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 2px;
+        z-index: 3;
+
+        &.tooltipShow {
+            display: block;
+        }
+    }
+
+    .paper {
+        background-position: 0 -256px;
     }
 }

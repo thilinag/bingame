@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { HERO_SIZE } from "../App";
 
 type Direction = "up" | "down" | "left" | "right";
+type Action = "pickup";
 
 interface Thing {
     x: number;
@@ -26,7 +27,7 @@ interface State {
     stage: HTMLElement | null;
     hero: HTMLElement | null;
     stuff: Thing[];
-    press: (direction: Direction, stopped?: boolean) => void;
+    press: (action: Direction | Action, stopped?: boolean) => void;
     moveUp: () => void;
     moveDown: () => void;
     moveLeft: () => void;
@@ -54,13 +55,14 @@ function isColliding(state: State) {
     const {
         x: heroX1,
         y: heroY1,
-        width: w1,
+        width: heroW1,
         height: h1,
     } = hero.getBoundingClientRect();
     const { x: stageX1, y: stageY1 } = stage.getBoundingClientRect();
 
-    const x1 = heroX1 - stageX1;
+    const x1 = heroX1 - stageX1 + 16;
     const y1 = heroY1 - stageY1;
+    const w1 = heroW1 - 32;
 
     // return stuff.some((thing) => {
     //   const { x: x2, y: y2, width: w2, height: h2 } = thing;
@@ -175,10 +177,10 @@ export const useStore = create<State>()((set) => ({
         {
             x: 100,
             y: 100,
-            width: 24,
-            height: 24,
-            background: "blue",
-            name: "thing1a",
+            width: 32,
+            height: 32,
+            background: "",
+            name: "paper",
             canInteract: true,
             isInteracting: false,
             canCollide: false,

@@ -84,32 +84,43 @@ function App() {
     }, state);
 
     const handleKeyPress = useCallback((event: KeyboardEvent) => {
-        const { key } = event;
-        switch (key) {
-            case "w":
-            case "W":
+        const { key, code } = event;
+        console.log(key, code);
+        switch (code) {
+            // case "w":
+            case "KeyW":
             case "ArrowUp":
                 press("up");
                 break;
 
-            case "a":
-            case "A":
+            // case "a":
+            case "KeyA":
             case "ArrowLeft":
                 press("left");
 
                 break;
 
-            case "s":
-            case "S":
+            // case "s":
+            case "KeyS":
             case "ArrowDown":
                 press("down");
                 break;
 
-            case "d":
-            case "D":
+            // case "d":
+            case "KeyD":
             case "ArrowRight":
                 press("right");
                 break;
+
+            case "Space":
+                press("pickup");
+                break;
+
+            // case "d":
+            // case "D":
+            // case "ArrowRight":
+            //     press("right");
+            //     break;
 
             default:
                 break;
@@ -181,20 +192,38 @@ function App() {
                 }}
             ></div>
             {stuff.map(
-                ({ x, y, width, height, background, name, isInteracting }) => (
+                ({
+                    x,
+                    y,
+                    width,
+                    height,
+                    background,
+                    name,
+                    isInteracting,
+                    canCollide,
+                }) => (
                     <div
                         key={name}
-                        className="thing"
+                        className="thingWrapper"
                         style={{
                             left: `${x}px`,
                             top: `${y}px`,
                             height: `${height}px`,
                             width: `${width}px`,
-                            background,
-                            ...(isInteracting && { outline: "1px solid red" }),
+                            backgroundColor: background,
+                            // ...(isInteracting && { outline: "1px solid red" }),
                         }}
                     >
-                        {name}
+                        <div className={classNames("thing", name)}></div>
+                        {!canCollide && (
+                            <span
+                                className={classNames("tooltip", {
+                                    tooltipShow: isInteracting,
+                                })}
+                            >
+                                {name}
+                            </span>
+                        )}
                     </div>
                 ),
             )}
