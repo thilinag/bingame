@@ -4,38 +4,7 @@ import "./App.css";
 
 import { useLoop } from "./hooks/useLoop";
 import { useStore } from "./hooks/useStore";
-
-// enum ActionKind {
-//   LEFT = "LEFT",
-//   LEFT_PRESSED = "LEFT_PRESSED",
-//   RIGHT = "RIGHT",
-//   RIGHT_PRESSED = "RIGHT_PRESSED",
-//   UP = "UP",
-//   UP_PRESSED = "UP_PRESSED",
-//   DOWN = "DOWN",
-//   DOWN_PRESSED = "DOWN_PRESSED",
-//   SET_STAGE = "SET_STAGE",
-//   SET_HERO = "SET_HERO",
-//   SET_COLLIDING_WITH = "SET_COLLIDING_WITH",
-// }
-
-// interface Action {
-//   type: ActionKind;
-//   payload?: any;
-// }
-
-// interface State {
-//   posX: number;
-//   posY: number;
-//   upPressed: boolean;
-//   rightPressed: boolean;
-//   downPressed: boolean;
-//   leftPressed: boolean;
-//   speed: number;
-//   stage: HTMLElement;
-//   hero: HTMLElement | null;
-//   colliding_with?: number | null;
-// }
+import { createPortal } from "react-dom";
 
 export const HERO_SIZE = 64;
 
@@ -45,7 +14,7 @@ function App() {
         setHero,
         setStage,
         stuff,
-        press,
+        perform,
         rightPressed,
         leftPressed,
         upPressed,
@@ -87,40 +56,30 @@ function App() {
         const { key, code } = event;
         console.log(key, code);
         switch (code) {
-            // case "w":
             case "KeyW":
             case "ArrowUp":
-                press("up");
+                perform("up");
                 break;
 
-            // case "a":
             case "KeyA":
             case "ArrowLeft":
-                press("left");
+                perform("left");
 
                 break;
 
-            // case "s":
             case "KeyS":
             case "ArrowDown":
-                press("down");
+                perform("down");
                 break;
 
-            // case "d":
             case "KeyD":
             case "ArrowRight":
-                press("right");
+                perform("right");
                 break;
 
             case "Space":
-                press("pickup");
+                perform("interact");
                 break;
-
-            // case "d":
-            // case "D":
-            // case "ArrowRight":
-            //     press("right");
-            //     break;
 
             default:
                 break;
@@ -133,25 +92,25 @@ function App() {
             case "w":
             case "W":
             case "ArrowUp":
-                press("up", false);
+                perform("up", false);
                 break;
 
             case "a":
             case "A":
             case "ArrowLeft":
-                press("left", false);
+                perform("left", false);
                 break;
 
             case "s":
             case "S":
             case "ArrowDown":
-                press("down", false);
+                perform("down", false);
                 break;
 
             case "d":
             case "D":
             case "ArrowRight":
-                press("right", false);
+                perform("right", false);
                 break;
 
             default:
@@ -201,31 +160,79 @@ function App() {
                     name,
                     isInteracting,
                     canCollide,
-                }) => (
-                    <div
-                        key={name}
-                        className="thingWrapper"
-                        style={{
-                            left: `${x}px`,
-                            top: `${y}px`,
-                            height: `${height}px`,
-                            width: `${width}px`,
-                            backgroundColor: background,
-                            // ...(isInteracting && { outline: "1px solid red" }),
-                        }}
-                    >
-                        <div className={classNames("thing", name)}></div>
-                        {!canCollide && (
-                            <span
-                                className={classNames("tooltip", {
-                                    tooltipShow: isInteracting,
-                                })}
+                    pickedUp,
+                    loading,
+                    contents = [],
+                }) =>
+                    pickedUp ? (
+                        createPortal(
+                            <div
+                                className="thingWrapper"
+                                style={{
+                                    height: `${height}px`,
+                                    width: `${width}px`,
+                                    backgroundColor: background,
+                                }}
                             >
-                                {name}
-                            </span>
-                        )}
-                    </div>
-                ),
+                                <div
+                                    className={classNames("thing", name)}
+                                ></div>
+                            </div>,
+                            heroRef.current!,
+                        )
+                    ) : (
+                        <div
+                            key={name}
+                            className="thingWrapper"
+                            style={{
+                                left: `${x}px`,
+                                top: `${y}px`,
+                                height: `${height}px`,
+                                width: `${width}px`,
+                                backgroundColor: background,
+                                ...(isInteracting &&
+                                    canCollide && { outline: `1px solid red` }),
+                            }}
+                        >
+                            <div
+                                className={classNames("thing", name, {
+                                    loading,
+                                })}
+                            ></div>
+                            {canCollide ? (
+                                <div>
+                                    {contents.map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className={classNames(
+                                                "thing",
+                                                item.name,
+                                                {
+                                                    dropped:
+                                                        index + 1 ===
+                                                        contents.length,
+                                                },
+                                            )}
+                                            style={{
+                                                height: `${item.height}px`,
+                                                width: `${item.width}px`,
+                                            }}
+                                        >
+                                            {/* {item.name} */}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <span
+                                    className={classNames("tooltip", {
+                                        tooltipShow: isInteracting,
+                                    })}
+                                >
+                                    {name}
+                                </span>
+                            )}
+                        </div>
+                    ),
             )}
         </main>
     );

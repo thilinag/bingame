@@ -18,8 +18,8 @@ body {
 
 .stage {
     background: gray;
-    width: 50vw;
-    height: 50vh;
+    width: 600px;
+    height: 400px;
     position: relative;
 }
 
@@ -72,6 +72,21 @@ body {
         z-index: 1;
     }
 
+    .paper {
+        background-position: 0 -320px;
+    }
+
+    .bin1 {
+        background-position: -160px -256px;
+
+        &.loading {
+            /* transition: all 0.1s;
+            transition-timing-function: steps(5); */
+            animation: bin 0.5s steps(5) 1 forwards;
+            animation-timing-function: steps(5);
+        }
+    }
+
     .tooltip {
         position: absolute;
         left: 50%;
@@ -90,7 +105,38 @@ body {
         }
     }
 
-    .paper {
-        background-position: 0 -256px;
+    .dropped {
+        top: -50%;
+        opacity: 1;
+        z-index: 10;
+        animation: drop 0.3s forwards;
+    }
+}
+
+.hero {
+    .thingWrapper {
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+    }
+}
+
+@keyframes drop {
+    to {
+        top: 50%;
+        opacity: 0;
+    }
+}
+
+@keyframes bin {
+    0% {
+        background-position-x: -160px;
+    }
+
+    30% {
+        background-position-x: 0;
+    }
+
+    100% {
+        background-position-x: -160px;
     }
 }

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { HERO_SIZE } from "../App";
 
 type Direction = "up" | "down" | "left" | "right";
-type Action = "pickup";
+type Action = "interact";
 
 interface Thing {
     x: number;
@@ -14,6 +14,10 @@ interface Thing {
     canInteract: boolean;
     isInteracting: boolean;
     canCollide: boolean;
+    pickedUp: boolean;
+    droppedOff: boolean;
+    loading: boolean;
+    contents?: Omit<Thing, "contents">[];
 }
 
 interface State {
@@ -27,7 +31,7 @@ interface State {
     stage: HTMLElement | null;
     hero: HTMLElement | null;
     stuff: Thing[];
-    press: (action: Direction | Action, stopped?: boolean) => void;
+    perform: (action: Direction | Action, stopped?: boolean) => void;
     moveUp: () => void;
     moveDown: () => void;
     moveLeft: () => void;
@@ -97,7 +101,7 @@ function isColliding(state: State) {
         );
     });
 
-    const interactingThings = stuff.map((thing) => {
+    const collidingThings = stuff.map((thing) => {
         const { x: x2, y: y2, width: w2, height: h2, canInteract } = thing;
 
         const isInteracting =
@@ -113,7 +117,7 @@ function isColliding(state: State) {
         };
     });
 
-    updateStuff(interactingThings);
+    updateStuff(collidingThings);
 
     const isColliding = collidingIndex > -1;
 
@@ -163,6 +167,36 @@ function getNextPos(direction: Direction, state: State) {
     }
 }
 
+function interactWithStuff(state: State) {
+    const pickedUpItem = state.stuff.find((thing) => thing.pickedUp);
+    const interactingItem = state.stuff.find((thing) => thing.isInteracting);
+
+    // pick up
+    if (!pickedUpItem && interactingItem && !interactingItem.canCollide) {
+        return {
+            stuff: state.stuff.map((thing) => ({
+                ...thing,
+                ...(thing.isInteracting &&
+                    !thing.canCollide && { pickedUp: true }),
+                loading: false,
+            })),
+        };
+    }
+
+    // drop
+    if (pickedUpItem && interactingItem && interactingItem.canCollide) {
+        interactingItem.contents?.push(pickedUpItem);
+        interactingItem.loading = true;
+        return {
+            stuff: state.stuff.filter((thing) => !thing.pickedUp),
+        };
+    }
+
+    return {
+        stuff: state.stuff,
+    };
+}
+
 export const useStore = create<State>()((set) => ({
     posX: 0,
     posY: 0,
@@ -184,26 +218,36 @@ export const useStore = create<State>()((set) => ({
             canInteract: true,
             isInteracting: false,
             canCollide: false,
+            pickedUp: false,
+            droppedOff: false,
+            loading: false,
         },
         {
             x: 400,
             y: 200,
-            width: 50,
-            height: 50,
-            background: "green",
-            name: "thing2",
+            width: 32,
+            height: 64,
+            background: "",
+            name: "bin1",
             canInteract: true,
             isInteracting: false,
             canCollide: true,
+            pickedUp: false,
+            droppedOff: false,
+            loading: false,
+            contents: [],
         },
     ],
-    press: (direction, moving = true) =>
-        set(() => {
+    perform: (action, moving = true) =>
+        set((state) => {
             return {
-                ...(direction === "up" && { upPressed: moving }),
-                ...(direction === "down" && { downPressed: moving }),
-                ...(direction === "left" && { leftPressed: moving }),
-                ...(direction === "right" && { rightPressed: moving }),
+                ...(action === "up" && { upPressed: moving }),
+                ...(action === "down" && { downPressed: moving }),
+                ...(action === "left" && { leftPressed: moving }),
+                ...(action === "right" && { rightPressed: moving }),
+                ...(action === "interact" && {
+                    ...interactWithStuff(state),
+                }),
             };
         }),
     moveUp: () =>
